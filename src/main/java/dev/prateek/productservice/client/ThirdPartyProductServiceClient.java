@@ -11,4 +11,7 @@ public interface ThirdPartyProductServiceClient {
     public FakeStoreProductDTO deleteProductById(Long Id) throws NotFoundException;
     public List<FakeStoreProductDTO> getAllProducts();
     public FakeStoreProductDTO createProduct(GenericProductDTO product);
+    public FakeStoreProductDTO updateProductById(Long Id,GenericProductDTO product) throws NotFoundException;
+    List<FakeStoreProductDTO> getProductsForCategory(String categoryId);
+    List<String> getAllCategories();
 }

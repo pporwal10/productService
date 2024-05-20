@@ -12,7 +12,6 @@ import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +21,8 @@ public class FakeStoreClient implements ThirdPartyProductServiceClient {
     private RestTemplateBuilder restTemplateBuilder;
     private String getAllProductRequestUrl = "https://fakestoreapi.com/products";
     private String getProductRequestUrl = "https://fakestoreapi.com/products/{id}";
+    private String getProductsForCategory = "https://fakestoreapi.com/products/category/{categoryId}";
+    private String getAllCategories = "https://fakestoreapi.com/products/categories";
 
 
     public FakeStoreClient(RestTemplateBuilder restTemplateBuilder){
@@ -55,6 +56,32 @@ public class FakeStoreClient implements ThirdPartyProductServiceClient {
         ResponseEntity<FakeStoreProductDTO> response = restTemplate.postForEntity(getAllProductRequestUrl,product,FakeStoreProductDTO.class);
         FakeStoreProductDTO fakeStoreProductDTO  = response.getBody();
         return fakeStoreProductDTO;
+    }
+
+    @Override
+    public FakeStoreProductDTO updateProductById(Long Id, GenericProductDTO product) throws NotFoundException {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(product, FakeStoreProductDTO.class);
+        ResponseExtractor<ResponseEntity<FakeStoreProductDTO>> responseExtractor = restTemplate.responseEntityExtractor(FakeStoreProductDTO.class);
+        ResponseEntity<FakeStoreProductDTO>response =restTemplate.execute(getProductRequestUrl, HttpMethod.PUT, requestCallback, responseExtractor, Id);
+        if(response.getBody()==null){
+            throw new NotFoundException("Product with id"+Id+" doesn't exist");
+        }
+        return response.getBody();
+    }
+
+    @Override
+    public List<FakeStoreProductDTO> getProductsForCategory(String categoryId) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        ResponseEntity<FakeStoreProductDTO[]> response = restTemplate.getForEntity(getProductsForCategory,FakeStoreProductDTO[].class, categoryId);
+        return Arrays.stream(response.getBody()).toList();
+    }
+
+    @Override
+    public List<String> getAllCategories() {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        ResponseEntity<String[]> response = restTemplate.getForEntity(getAllCategories,String[].class);
+        return Arrays.stream(response.getBody()).toList();
     }
 
     @Override

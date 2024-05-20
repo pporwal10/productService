@@ -42,8 +42,16 @@ public class ProductController {
     }
 
     @PutMapping("{id}")
-    public void updateProductById(@PathVariable("id") Long id){
-
+    public GenericProductDTO updateProductById(@RequestBody GenericProductDTO product, @PathVariable("id") Long id) throws NotFoundException{
+        return productService.updateProductById(id,product);
+    }
+    @GetMapping("/category/{categoryId}")
+    public List<GenericProductDTO> getProductsForCategory(@PathVariable("categoryId") String categoryId){
+        return productService.getProductsForCategory(categoryId);
+    }
+    @GetMapping("/categories")
+    public List<String> getAllCategories(){
+        return productService.getAllCategories();
     }
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ExceptionDTO> handleNotFoundException(NotFoundException notFoundException){

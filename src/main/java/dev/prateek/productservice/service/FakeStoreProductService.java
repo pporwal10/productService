@@ -56,6 +56,12 @@ public class FakeStoreProductService implements ProductService{
         return genericProductDTO;
     }
 
+    @Override
+    public GenericProductDTO updateProductById(Long Id, GenericProductDTO product) throws NotFoundException {
+        GenericProductDTO genericProductDTO = new GenericProductDTO();
+        mapFakeStoreToGenericProductDTO(thirdPartyProductServiceClient.updateProductById(Id,product), genericProductDTO);
+        return genericProductDTO;
+    }
 
     private void mapFakeStoreToGenericProductDTO(FakeStoreProductDTO fakeStoreProductDTO, GenericProductDTO genericProductDTO) {
         genericProductDTO.setCategory(fakeStoreProductDTO.getCategory());
@@ -65,5 +71,22 @@ public class FakeStoreProductService implements ProductService{
         genericProductDTO.setTitle(fakeStoreProductDTO.getTitle());
         genericProductDTO.setId(fakeStoreProductDTO.getId());
     }
+
+    @Override
+    public List<GenericProductDTO> getProductsForCategory(String categoryId) {
+        List<GenericProductDTO> genericProductDTOList = new ArrayList<>();
+        for(FakeStoreProductDTO fakeStoreProductDTO:thirdPartyProductServiceClient.getProductsForCategory(categoryId)){
+            GenericProductDTO genericProductDTO = new GenericProductDTO();
+            mapFakeStoreToGenericProductDTO(fakeStoreProductDTO,genericProductDTO);
+            genericProductDTOList.add(genericProductDTO);
+        }
+        return genericProductDTOList;
+    }
+
+    @Override
+    public List<String> getAllCategories() {
+        return thirdPartyProductServiceClient.getAllCategories();
+    }
+
 
 }
