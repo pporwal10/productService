@@ -2,9 +2,13 @@ package dev.prateek.productservice.service;
 
 import dev.prateek.productservice.dtos.FakeStoreProductDTO;
 import dev.prateek.productservice.dtos.GenericProductDTO;
+import dev.prateek.productservice.exceptions.NotFoundException;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -45,7 +49,10 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public GenericProductDTO getProductById(Long Id) {
+    public GenericProductDTO getProductById(Long Id)  throws ArrayIndexOutOfBoundsException{
+        if(Id>1000){
+            throw new ArrayIndexOutOfBoundsException("Memory not available");
+        }
         RestTemplate restTemplate = restTemplateBuilder.build();
         ResponseEntity<FakeStoreProductDTO> response = restTemplate.getForEntity(getProductRequestUrl,FakeStoreProductDTO.class,Id);
         FakeStoreProductDTO fakeStoreProductDTO = response.getBody();
@@ -61,6 +68,20 @@ public class FakeStoreProductService implements ProductService{
         FakeStoreProductDTO fakeStoreProductDTO  = response.getBody();
         GenericProductDTO genericProductDTO = new GenericProductDTO();
         mapFakeStoreToGenericProductDTO(fakeStoreProductDTO,genericProductDTO);
+        return genericProductDTO;
+    }
+
+    @Override
+    public GenericProductDTO deleteProductById(Long id) throws NotFoundException {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        RequestCallback requestCallback = restTemplate.acceptHeaderRequestCallback(FakeStoreProductDTO.class);
+        ResponseExtractor<ResponseEntity<FakeStoreProductDTO>> responseExtractor = restTemplate.responseEntityExtractor(FakeStoreProductDTO.class);
+        ResponseEntity<FakeStoreProductDTO>response = restTemplate.execute(getProductRequestUrl, HttpMethod.DELETE, requestCallback, responseExtractor, id);
+        GenericProductDTO genericProductDTO = new GenericProductDTO();
+        if(response.getBody()==null){
+            throw new NotFoundException("Product with id"+id+" doesn't exist");
+        }
+        mapFakeStoreToGenericProductDTO(response.getBody(),genericProductDTO);
         return genericProductDTO;
     }
 

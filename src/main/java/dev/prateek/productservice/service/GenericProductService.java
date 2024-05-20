@@ -19,4 +19,9 @@ public class GenericProductService implements ProductService{
     public GenericProductDTO createProduct(GenericProductDTO product) {
         return null;
     }
+
+    @Override
+    public GenericProductDTO deleteProductById(Long id) {
+        return null;
+    }
 }
