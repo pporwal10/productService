@@ -1,9 +1,12 @@
 package dev.prateek.productservice.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class Product extends BaseModel{
+    private long id;
     private String title;
     private String description;
     private String image;
