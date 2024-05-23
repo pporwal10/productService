@@ -2,9 +2,12 @@ package dev.prateek.productservice.service;
 
 import dev.prateek.productservice.dtos.GenericProductDTO;
 import dev.prateek.productservice.exceptions.NotFoundException;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Primary
+@Service
 public class GenericProductService implements ProductService{
     @Override
     public List<GenericProductDTO> getProducts() {
