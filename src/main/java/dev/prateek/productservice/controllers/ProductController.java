@@ -4,7 +4,6 @@ import dev.prateek.productservice.dtos.ExceptionDTO;
 import dev.prateek.productservice.dtos.GenericProductDTO;
 import dev.prateek.productservice.exceptions.NotFoundException;
 import dev.prateek.productservice.service.ProductService;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,7 @@ public class ProductController {
 
     @GetMapping()
     public List<GenericProductDTO> getAllProducts(){
-        return productService.getProducts();
+        return productService.getAllProducts();
     }
 
     @GetMapping("{id}")

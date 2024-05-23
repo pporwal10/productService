@@ -6,7 +6,7 @@ import dev.prateek.productservice.exceptions.NotFoundException;
 import java.util.List;
 
 public interface ProductService {
-    List<GenericProductDTO> getProducts();
+    List<GenericProductDTO> getAllProducts();
 
     GenericProductDTO getProductById(Long Id) throws ArrayIndexOutOfBoundsException;
 
