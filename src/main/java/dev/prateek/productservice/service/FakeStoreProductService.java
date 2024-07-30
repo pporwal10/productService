@@ -4,17 +4,23 @@ import dev.prateek.productservice.client.ThirdPartyProductServiceClient;
 import dev.prateek.productservice.dtos.FakeStoreProductDTO;
 import dev.prateek.productservice.dtos.GenericProductDTO;
 import dev.prateek.productservice.exceptions.NotFoundException;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service("fakeStoreProductService")
+@Primary
 public class FakeStoreProductService implements ProductService{
 
     private ThirdPartyProductServiceClient thirdPartyProductServiceClient;
-    public FakeStoreProductService(ThirdPartyProductServiceClient thirdPartyProductServiceClient){
+
+    private RedisTemplate redisTemplate;
+    public FakeStoreProductService(ThirdPartyProductServiceClient thirdPartyProductServiceClient, RedisTemplate redisTemplate){
         this.thirdPartyProductServiceClient=thirdPartyProductServiceClient;
+        this.redisTemplate=redisTemplate;
     }
 
     @Override
@@ -31,14 +37,19 @@ public class FakeStoreProductService implements ProductService{
 
 
     @Override
-    public GenericProductDTO getProductById(Long Id)  throws ArrayIndexOutOfBoundsException{
-        if(Id>1000){
+    public GenericProductDTO getProductById(Long id)  throws ArrayIndexOutOfBoundsException{
+        if(id>1000){
             throw new ArrayIndexOutOfBoundsException("Memory not available");
         }
-        FakeStoreProductDTO fakeStoreProductDTO = thirdPartyProductServiceClient.getProductById(Id);
-        GenericProductDTO genericProductDTO = new GenericProductDTO();
-        mapFakeStoreToGenericProductDTO(fakeStoreProductDTO,genericProductDTO);
-        return  genericProductDTO;
+        GenericProductDTO genericProductDTO = (GenericProductDTO) redisTemplate.opsForHash().get("PRODUCTS",id);
+        if(genericProductDTO!=null){
+            return genericProductDTO;
+        }
+        FakeStoreProductDTO fakeStoreProductDTO = thirdPartyProductServiceClient.getProductById(id);
+        GenericProductDTO genericProductDTO1 = new GenericProductDTO();
+        mapFakeStoreToGenericProductDTO(fakeStoreProductDTO,genericProductDTO1);
+        redisTemplate.opsForHash().put("PRODUCTS",id,genericProductDTO1);
+        return  genericProductDTO1;
     }
 
     @Override

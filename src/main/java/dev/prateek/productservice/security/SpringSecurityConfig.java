@@ -18,7 +18,6 @@ public class SpringSecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/products/{id}").authenticated()
                         .anyRequest().permitAll()
                 )
 
